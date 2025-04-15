@@ -10,11 +10,22 @@ class CategoriaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categorias = Categoria::all();
-        return view('categoria.index', compact('castegorias'));
+        // Iniciar la consulta
+        $query = Categoria::query();
 
+        // Si hay un valor de búsqueda, aplicar filtros
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('nombre', 'like', "%$search%")
+                  ->orWhere('descripcion', 'like', "%$search%");
+        }
+
+        // Obtener los resultados
+        $categorias = $query->get();
+
+        return view('categoria.index', compact('categorias'));
     }
 
     /**
@@ -22,7 +33,7 @@ class CategoriaController extends Controller
      */
     public function create()
     {
-        //
+        // No se utiliza, ya que se manejan con modales
     }
 
     /**
@@ -30,11 +41,12 @@ class CategoriaController extends Controller
      */
     public function store(Request $request)
     {
-        $categorias= new Categoria;
-        $categorias->nombre=$request->input ('nombre');
-        $categorias->descripcion=$request->input ('descripcion');
+        $categorias = new Categoria;
+        $categorias->nombre = $request->input('nombre');
+        $categorias->descripcion = $request->input('descripcion');
         $categorias->save();
-        return redirect()->back();
+
+        return redirect()->back()->with('success', 'Categoría creada correctamente.');
     }
 
     /**
@@ -50,7 +62,7 @@ class CategoriaController extends Controller
      */
     public function edit($id)
     {
-        
+        //
     }
 
     /**
@@ -58,11 +70,12 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $categorias=Categoria::find($id);
-        $categorias->nombre=$request->input ('nombre');
-        $categorias->descripcion=$request->input ('descripcion');
-        $categorias->update();
-        return redirect()->back();
+        $categorias = Categoria::findOrFail($id);
+        $categorias->nombre = $request->input('nombre');
+        $categorias->descripcion = $request->input('descripcion');
+        $categorias->save();
+
+        return redirect()->back()->with('success', 'Categoría actualizada correctamente.');
     }
 
     /**
@@ -70,9 +83,9 @@ class CategoriaController extends Controller
      */
     public function destroy($id)
     {
-        $categorias=Categoria::find($id);
+        $categorias = Categoria::findOrFail($id);
         $categorias->delete();
-        return redirect()->back();
-        
+
+        return redirect()->back()->with('success', 'Categoría eliminada correctamente.');
     }
 }

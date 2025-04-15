@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers\Auth;
 
@@ -28,11 +28,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if ($request->user()->usertype =='admin'){
-           return redirect('admin/dashboard');
+        if ($request->user()->usertype === 'admin') {
+            return redirect()->intended('/admin/dashboard');
         }
 
-        return redirect()->intended(route('dashboard'));
+        // Aquí redirige si es usuario normal
+        return redirect()->intended('/carrito/dashboard');
     }
 
     /**
